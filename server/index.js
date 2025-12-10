@@ -2,10 +2,16 @@ import express from "express"
 import pool from "./db.js"
 import bcrypt from "bcryptjs"
 import productsRouter from "./routes/products.js"
+import cors from "cors"
 
 console.log("hello");
 
 const app = express()
+
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 
 // Middleware
 app.use(express.json())
@@ -13,13 +19,6 @@ app.use(express.json())
 app.get("/", (req, res) => {
     res.status(200).json({ test: "msg" })
 })
-app.enableCors = function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With");
-    next();
-}
-app.use(app.enableCors);
 
 app.get("/api/test", async (req, res) => {
     try {

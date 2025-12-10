@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Demozon</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
 <body class="">
@@ -35,13 +36,24 @@
     </nav>
 
     <div class="container py-5">
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <h2>Products</h2>
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-5">
+                <h2 class="mb-0"><i class="bi bi-bag-fill text-primary me-2"></i>Products</h2>
             </div>
-            <div class="col-md-4 text-end">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal" id="addBtn"
-                    style="display: none;">Add Product</button>
+            <div class="col-md-7 text-end">
+                <div class="d-flex gap-2 justify-content-end">
+                    <button class="btn btn-outline-light" onclick="displayProducts(products)">
+                        <i class="bi bi-grid-3x3-gap-fill me-1"></i> View All
+                    </button>
+                    <button class="btn btn-outline-info" id="myProductBtn" onclick="displayVendorsProducts()"
+                        style="display: none;">
+                        <i class="bi bi-person-badge-fill me-1"></i> My Products
+                    </button>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal" id="addBtn"
+                        style="display: none;">
+                        <i class="bi bi-plus-circle-fill me-1"></i> Add Product
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -87,9 +99,32 @@
         </div>
     </div>
 
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 mt-5 border-top border-secondary">
         <div class="container">
-            <p>&copy; 2025 Demozon. All rights reserved.</p>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>Demozon</h5>
+                    <p class="text-secondary">Your trusted marketplace for everything.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-secondary text-decoration-none">Home</a></li>
+                        <li><a href="products.html" class="text-secondary text-decoration-none">Products</a></li>
+                        <li><a href="login.html" class="text-secondary text-decoration-none">Login</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Contact</h5>
+                    <p class="text-secondary">Email: support@demozon.com</p>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center text-secondary">
+                <p class="mb-0">&copy; 2025 Demozon. All rights reserved by <a href="https://github.com/codershubinc"
+                        class="text-white text-decoration-none">@codershubinc</a>.</p>
+            </div>
         </div>
     </footer>
 
@@ -97,11 +132,13 @@
     <script src="js/app.js"></script>
     <script>
         const user = JSON.parse(localStorage.getItem('user'));
+        let products;
 
         if (user) {
             document.getElementById('userMenu').style.display = 'block';
             document.getElementById('loginMenu').style.display = 'none';
             document.getElementById('addBtn').style.display = 'block';
+            document.getElementById("myProductBtn").style.display = "block"
         } else {
             document.getElementById('userMenu').style.display = 'none';
             document.getElementById('loginMenu').style.display = 'block';
@@ -111,8 +148,10 @@
         // Fetch products
         async function fetchProducts() {
             try {
-                const response = await fetch('http://localhost:3000/api/products');
+                const response = await fetch(`${API_BASE_URL}/products`);
                 const data = await response.json();
+                console.log(data);
+                products = data.data
                 displayProducts(data.data);
             } catch (error) {
                 document.getElementById('productsContainer').innerHTML = `<div class="alert alert-danger">Error loading products: ${error.message}</div>`;
@@ -125,6 +164,7 @@
                 container.innerHTML = '<div class="col-12"><p class="text-center">No products available</p></div>';
                 return;
             }
+            container.innerHTML = ""
 
             container.innerHTML = products.map(product => `
                 <div class="col-md-4 mb-4">
@@ -133,13 +173,50 @@
                             <h5 class="card-title">${product.name}</h5>
                             <p class="card-text">${product.description || 'No description'}</p>
                             <p class="text-muted">By: ${product.vendor_name}</p>
-                            <p class="text-success fw-bold">$${parseFloat(product.price).toFixed(2)}</p>
+                            <p class="text-muted">ID: ${product.user_id}</p>
+                            <p class="text-success fw-bold"> INR : ${parseFloat(product.price).toFixed(2)}</p>
                             <p class="text-secondary">Stock: ${product.stock}</p>
                             <button class="btn btn-sm btn-success w-100">Add to Cart</button>
                         </div>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function displayVendorsProducts() {
+            const container = document.getElementById('productsContainer');
+            console.log("d v p");
+            if (products.length === 0) {
+                container.innerHTML = '<div class="col-12"><p class="text-center">No products available</p></div>';
+                return;
+            }
+            container.innerHTML = ""
+
+            container.innerHTML = products.map((product) => {
+                if (product.user_id === user.id) {
+                    console.log("d v p");
+
+                    return `
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.description || 'No description'}</p>
+                                <p class="text-muted">By: ${product.vendor_name}</p>
+                                <p class="text-muted">ID: ${product.user_id}</p>
+                                <p class="text-success fw-bold"> INR : ${parseFloat(product.price).toFixed(2)}</p>
+                                <p class="text-secondary">Stock: ${product.stock}</p>
+                                <button class="btn btn-sm btn-success w-100">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>`
+                }
+                return ''
+            }).join('')
+
+            if (container.innerHTML.trim() === '') {
+                container.innerHTML = '<div class="col-12"><p class="text-center">You have no products listed.</p></div>';
+            }
         }
 
         // Add product
@@ -157,7 +234,7 @@
             const stock = document.getElementById('productStock').value;
 
             try {
-                const response = await fetch('http://localhost:3000/api/products', {
+                const response = await fetch(`${API_BASE_URL}/products`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -188,7 +265,7 @@
 
         function logout() {
             localStorage.removeItem('user');
-            window.location.reload();
+            window.location = "/frontend/index.html"
         }
 
         fetchProducts();
