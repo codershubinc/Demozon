@@ -33,7 +33,6 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     return await response.json();
 }
 
-// Product functions
 async function getProducts() {
     return await apiCall('/products');
 }
@@ -58,7 +57,17 @@ async function deleteProduct(id) {
     return await apiCall(`/products/${id}`, 'DELETE');
 }
 
-// Auth functions
+async function getCart(userId) {
+    return await apiCall(`/cart/${userId}`);
+}
+
+async function addToCart(userId, productId, quantity = 1) {
+    return await apiCall('/cart', 'POST', { user_id: userId, product_id: productId, quantity });
+}
+
+async function removeFromCart(id) {
+    return await apiCall(`/cart/${id}`, 'DELETE');
+}
 async function signup(name, email, password) {
     return await apiCall('/signup', 'POST', { name, email, password });
 }

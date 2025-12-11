@@ -2,6 +2,7 @@ import express from "express"
 import pool from "./db.js"
 import bcrypt from "bcryptjs"
 import productsRouter from "./routes/products.js"
+import cartRouter from "./routes/cart.js"
 import cors from "cors"
 
 console.log("hello");
@@ -33,6 +34,7 @@ app.get("/api/test", async (req, res) => {
 
 // Routes
 app.use("/api/products", productsRouter)
+app.use("/api/cart", cartRouter)
 
 // Signup endpoint
 app.post("/api/signup", async (req, res) => {
