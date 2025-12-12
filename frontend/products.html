@@ -315,13 +315,7 @@
                 // Refresh cart
                 const response = await getCart(user.id);
                 const items = response.data;
-                // Re-render cart items (simplified for now, ideally refactor render logic)
-                // For now, just close and reopen or reload would be easiest, but let's try to refresh the modal content
-                // Actually, calling openCart again might re-instantiate the modal which is bad.
-                // Let's just reload the page or manually update.
-                // Better: extract render logic. But for speed, I'll just hide and show or alert.
                 alert('Item removed');
-                // Close modal to reset state or just reload page
                 window.location.reload();
             } catch (error) {
                 alert('Error removing item: ' + error.message);
